@@ -166,10 +166,3 @@ Then Enter `n`for uninstall.
 ## License
 
 This tool is open-source and available under the MIT License.
-
-## Author
-
-- **Sreeraj**
-
-**GitHub:** https://github.com/s-r-e-e-r-a-j
-
