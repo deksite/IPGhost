@@ -1,0 +1,37 @@
+version: "3.8"
+
+services:
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    container_name: flaresolverr_direct
+    restart: unless-stopped
+    environment:
+      - LOG_LEVEL=info
+      - TZ=America/Asuncion
+      # Opcional: tempo máx. por request (segundos)
+      - BROWSER_TIMEOUT=120000
+      # Se quiser rodar com UI para debug: HEADLESS=false
+      - HEADLESS=true
+    ports:
+      - "8191:8191"   # API do FlareSolverr
+
+  flare-proxy:
+    build: ./proxy
+    container_name: flare-proxy
+    depends_on:
+      - flaresolverr
+    restart: unless-stopped
+    environment:
+      # URL da API do FlareSolverr:
+      - FLARESOLVERR_URL=http://flaresolverr:8191/v1
+      # Domínio alvo (fixo neste caso):
+      - TARGET_ORIGIN=https://www.comprasparaguai.com.br
+      # Opcional: proxy upstream para o acesso externo (HTTP/HTTPS)
+      # Ex.: http://usuario:senha@host:porta  (Oxylabs, etc.)
+      - UPSTREAM_PROXY_URL=
+      # Palavras-chave que indicam bloqueio/expiração (separadas por |)
+      - BLOCK_PHRASES=checking your browser|cf-browser-verification|just a moment|Access denied|403 Forbidden
+      # Timeout (segundos) para requests ao FlareSolverr:
+      - REQUEST_TIMEOUT=90
+    ports:
+      - "8080:8080"   # <- Seu robô consome aqui
